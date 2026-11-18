@@ -1,0 +1,16 @@
+
+{% load i18n %}
+
+<form action="{% url 'set_language' %}" method="post">
+    {% csrf_token %}
+
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+    <button type="submit" name="language" value="ka">
+        ქართული
+    </button>
+
+    <button type="submit" name="language" value="en">
+        English
+    </button>
+</form>

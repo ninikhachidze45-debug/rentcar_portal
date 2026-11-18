@@ -1,0 +1,908 @@
+{% load static %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
+
+<!DOCTYPE html>
+<html lang="{{ CURRENT_LANGUAGE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% if CURRENT_LANGUAGE == 'ka' %}ჩემი პროფილი{% else %}My Profile{% endif %}
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6f8;
+            color: #222;
+        }
+
+        .profile-container {
+            max-width: 1150px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        .profile-header,
+        .section {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            margin-bottom: 28px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .profile-header h1 {
+            margin-bottom: 18px;
+            font-size: 28px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            color: #555;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+        }
+
+        .section h2 {
+            font-size: 22px;
+            margin-bottom: 22px;
+        }
+
+        .empty-message {
+            color: #777;
+            padding: 15px 0;
+        }
+
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 22px;
+        }
+
+        .car-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            transition: transform 0.2s ease;
+        }
+
+        .car-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .profile-car-photo {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            display: block;
+            background: #eceef1;
+        }
+
+        .no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            background: #eceef1;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .car-info {
+            padding: 16px;
+        }
+
+        .car-info h3 {
+            font-size: 17px;
+            margin-bottom: 9px;
+        }
+
+        .car-info p {
+            color: #666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .car-info > a {
+            display: inline-block;
+            margin-top: 12px;
+            color: #b18745;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .car-info > a:hover {
+            text-decoration: underline;
+        }
+
+        .car-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .car-actions a,
+        .car-actions button {
+            display: inline-block;
+            padding: 9px 13px;
+            border: none;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .view-car-button {
+            background: #f5f1e9;
+            color: #a17a3e;
+        }
+
+        .edit-car-button {
+            background: #101b32;
+            color: white;
+        }
+
+        .delete-car-button {
+            background: #a83232;
+            color: white;
+        }
+
+        .view-car-button:hover {
+            background: #e9e1d3;
+        }
+
+        .edit-car-button:hover {
+            background: #263d63;
+        }
+
+        .delete-car-button:hover {
+            background: #842525;
+        }
+
+        .car-actions form,
+        .rental-actions form {
+            margin: 0;
+        }
+
+        .rental-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .rental-row:last-child {
+            border-bottom: none;
+        }
+
+        .rental-details {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .rental-car-photo {
+            width: 130px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #eceef1;
+            flex-shrink: 0;
+        }
+
+        .rental-details h3 {
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        .rental-details p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .incoming-rental-info {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            min-width: 0;
+        }
+
+        .incoming-rental-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .incoming-rental-info strong {
+            color: #222;
+        }
+
+        .rental-total {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .rental-total strong {
+            font-size: 17px;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #fff3d6;
+            color: #946200;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .rental-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .rental-actions button {
+            display: inline-block;
+            padding: 9px 12px;
+            border: none;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cancel-button {
+            background: #f5f1e9;
+            color: #a17a3e;
+        }
+
+        .cancel-button:hover {
+            background: #e9e1d3;
+        }
+
+        .refund-info {
+            margin-top: 8px;
+            padding: 10px;
+            background: #f5f6f8;
+            border-radius: 8px;
+            white-space: normal;
+            font-size: 12px;
+            color: #555;
+            text-align: right;
+        }
+
+        .refund-info p {
+            margin: 4px 0;
+        }
+
+        .profile-navigation {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .home-button,
+        .logout-button {
+            display: inline-block;
+            padding: 11px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            transition: background 0.2s;
+        }
+
+        .home-button {
+            background: #b18745;
+        }
+
+        .home-button:hover {
+            background: #96703a;
+        }
+
+        .logout-button {
+            background: #222;
+        }
+
+        .logout-button:hover {
+            background: #444;
+        }
+
+        @media (max-width: 580px) {
+            .profile-container {
+                margin: 20px auto;
+                padding: 0 12px;
+            }
+
+            .profile-header,
+            .section {
+                padding: 20px;
+            }
+
+            .rental-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .rental-details {
+                align-items: flex-start;
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .rental-car-photo {
+                width: 100%;
+                height: 180px;
+            }
+
+            .rental-total {
+                align-items: flex-start;
+                width: 100%;
+                white-space: normal;
+            }
+
+            .rental-actions {
+                justify-content: flex-start;
+            }
+
+            .refund-info {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="profile-container">
+
+    <!-- Profile information -->
+    <div class="profile-header">
+
+        <h1>
+            {% if CURRENT_LANGUAGE == 'ka' %}
+                ჩემი პროფილი
+            {% else %}
+                My Profile
+            {% endif %}
+        </h1>
+
+        <div class="user-info">
+            <div>
+                <p>
+                    <strong>
+                        {% if CURRENT_LANGUAGE == 'ka' %}სახელი:{% else %}Name:{% endif %}
+                    </strong>
+                    {{ user.firstName }} {{ user.lastName }}
+                </p>
+
+                <p>
+                    <strong>
+                        {% if CURRENT_LANGUAGE == 'ka' %}ტელეფონი:{% else %}Phone:{% endif %}
+                    </strong>
+                    {{ user.phoneNumber }}
+                </p>
+            </div>
+        </div>
+
+        <div class="profile-navigation">
+            <a href="{% url 'home' %}" class="home-button">
+                {% if CURRENT_LANGUAGE == 'ka' %}მთავარი{% else %}Home{% endif %}
+            </a>
+
+            <a href="{% url 'logout' %}" class="logout-button">
+                {% if CURRENT_LANGUAGE == 'ka' %}გასვლა{% else %}Log out{% endif %}
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- Favorite cars -->
+    <section class="section">
+
+        <h2>
+            {% if CURRENT_LANGUAGE == 'ka' %}
+                რჩეული მანქანები
+            {% else %}
+                Favorite Cars
+            {% endif %}
+        </h2>
+
+        {% if favorites %}
+
+            <div class="cars-grid">
+
+                {% for favorite in favorites %}
+                    {% with car=favorite.car %}
+
+                        <article class="car-card">
+
+                            {% if car.image1 %}
+                                <img
+                                    class="profile-car-photo"
+                                    src="{{ car.image1.url }}"
+                                    alt="{{ car.brand }} {{ car.model }}"
+                                    loading="lazy"
+                                >
+                            {% else %}
+                                <div class="profile-car-photo no-image">
+                                    {% if CURRENT_LANGUAGE == 'ka' %}
+                                        ფოტო მიუწვდომელია
+                                    {% else %}
+                                        No photo available
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            <div class="car-info">
+
+                                <h3>{{ car.brand }} {{ car.model }}</h3>
+
+                                <p>{{ car.year }}</p>
+
+                                <p>
+                                    {{ car.price }} GEL /
+                                    {% if CURRENT_LANGUAGE == 'ka' %}დღე{% else %}day{% endif %}
+                                </p>
+
+                                <a href="{% url 'car_detail' car.id %}">
+                                    {% if CURRENT_LANGUAGE == 'ka' %}
+                                        დეტალების ნახვა
+                                    {% else %}
+                                        View details
+                                    {% endif %}
+                                </a>
+
+                            </div>
+
+                        </article>
+
+                    {% endwith %}
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <p class="empty-message">
+                {% if CURRENT_LANGUAGE == 'ka' %}
+                    ჯერ არ გაქვს რჩეული მანქანები.
+                {% else %}
+                    You haven't added any favorite cars yet.
+                {% endif %}
+            </p>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- Rental history -->
+    <section class="section">
+
+        <h2>
+            {% if CURRENT_LANGUAGE == 'ka' %}
+                ქირაობის ისტორია
+            {% else %}
+                Rental History
+            {% endif %}
+        </h2>
+
+        {% if rentals %}
+
+            {% for item in rentals %}
+
+                <article class="rental-row">
+
+                    <div class="rental-details">
+
+                        {% if item.car.image1 %}
+                            <img
+                                class="rental-car-photo"
+                                src="{{ item.car.image1.url }}"
+                                alt="{{ item.car.brand }} {{ item.car.model }}"
+                                loading="lazy"
+                            >
+                        {% else %}
+                            <div class="rental-car-photo no-image">
+                                {% if CURRENT_LANGUAGE == 'ka' %}
+                                    ფოტო მიუწვდომელია
+                                {% else %}
+                                    No photo available
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div>
+
+                            <h3>
+                                {{ item.car.brand }} {{ item.car.model }}
+                            </h3>
+
+                            <p>
+                                {{ item.start_date }} — {{ item.end_date }}
+                                · {{ item.total_days }}
+                                {% if CURRENT_LANGUAGE == 'ka' %}
+                                    დღე
+                                {% else %}
+                                    days
+                                {% endif %}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="rental-total">
+
+                        <strong>{{ item.total_price }} GEL</strong>
+
+                        <span class="status-pill">
+                            {{ item.rental.get_status_display }}
+                        </span>
+
+                        {% if item.rental.status == 'paid' %}
+
+                            <div class="rental-actions">
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'cancel_paid_rental' item.rental.id %}"
+                                    onsubmit="return confirmAction(this);"
+                                    data-confirm-ka="ნამდვილად გსურთ ჯავშნის გაუქმება? დაბრუნებული თანხა დამოკიდებულია გაუქმების დროზე."
+                                    data-confirm-en="Are you sure you want to cancel this paid booking? The refund depends on how early you cancel."
+                                >
+                                    {% csrf_token %}
+
+                                    <button type="submit" class="cancel-button">
+                                        {% if CURRENT_LANGUAGE == 'ka' %}
+                                            ჯავშნის გაუქმება
+                                        {% else %}
+                                            Cancel booking
+                                        {% endif %}
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        {% endif %}
+
+                        {% if item.payment and item.rental.status == 'cancelled' %}
+
+                            <div class="refund-info">
+
+                                <p>
+                                    <strong>
+                                        {% if CURRENT_LANGUAGE == 'ka' %}
+                                            დაბრუნებული თანხა:
+                                        {% else %}
+                                            Refund:
+                                        {% endif %}
+                                    </strong>
+
+                                    {{ item.payment.refund_amount }} GEL
+                                </p>
+
+                                <p>
+                                    <strong>
+                                        {% if CURRENT_LANGUAGE == 'ka' %}
+                                            დაკავებული თანხა:
+                                        {% else %}
+                                            Cancellation fee:
+                                        {% endif %}
+                                    </strong>
+
+                                    {{ item.payment.cancellation_fee }} GEL
+                                </p>
+
+                                <p>
+                                    <em>
+                                        {% if CURRENT_LANGUAGE == 'ka' %}
+                                            დემო დაბრუნება — რეალური თანხა არ გადარიცხულა.
+                                        {% else %}
+                                            Simulated refund — no real money was transferred.
+                                        {% endif %}
+                                    </em>
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p class="empty-message">
+                {% if CURRENT_LANGUAGE == 'ka' %}
+                    ქირაობის ისტორია ცარიელია.
+                {% else %}
+                    You haven't made any rental requests yet.
+                {% endif %}
+            </p>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- Bookings for cars listed by this user -->
+    <section class="section">
+
+        <h2>
+            {% if CURRENT_LANGUAGE == 'ka' %}
+                ჩემი მანქანების ჯავშნები
+            {% else %}
+                Bookings for My Cars
+            {% endif %}
+        </h2>
+
+        {% if incoming_rentals %}
+
+            {% for item in incoming_rentals %}
+
+                <article class="rental-row">
+
+                    <div class="rental-details">
+
+                        {% if item.car.image1 %}
+                            <img
+                                class="rental-car-photo"
+                                src="{{ item.car.image1.url }}"
+                                alt="{{ item.car.brand }} {{ item.car.model }}"
+                                loading="lazy"
+                            >
+                        {% else %}
+                            <div class="rental-car-photo no-image">
+                                {% if CURRENT_LANGUAGE == 'ka' %}
+                                    ფოტო მიუწვდომელია
+                                {% else %}
+                                    No photo available
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div class="incoming-rental-info">
+
+                            <h3>
+                                {{ item.car.brand }} {{ item.car.model }}
+                            </h3>
+
+                            <p>
+                                <strong>
+                                    {% if CURRENT_LANGUAGE == 'ka' %}
+                                        დამქირავებელი:
+                                    {% else %}
+                                        Renter:
+                                    {% endif %}
+                                </strong>
+
+                                {{ item.renter_name|default:item.renter_phone }}
+                            </p>
+
+                            <p>
+                                <strong>
+                                    {% if CURRENT_LANGUAGE == 'ka' %}
+                                        ტელეფონი:
+                                    {% else %}
+                                        Phone:
+                                    {% endif %}
+                                </strong>
+
+                                {{ item.renter_phone }}
+                            </p>
+
+                            <p>
+                                {{ item.rental.start_date }} —
+                                {{ item.rental.end_date }}
+                            </p>
+
+                            <p>
+                                {{ item.rental.total_days }}
+                                {% if CURRENT_LANGUAGE == 'ka' %}
+                                    დღე
+                                {% else %}
+                                    days
+                                {% endif %}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="rental-total">
+
+                        <strong>
+                            {{ item.rental.total_price }} GEL
+                        </strong>
+
+                        <span class="status-pill">
+                            {{ item.rental.get_status_display }}
+                        </span>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p class="empty-message">
+                {% if CURRENT_LANGUAGE == 'ka' %}
+                    ჯერ არ გაქვს მიღებული ჯავშნები.
+                {% else %}
+                    You haven't received any bookings yet.
+                {% endif %}
+            </p>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- Cars added by the user -->
+    <section class="section">
+
+        <h2>
+            {% if CURRENT_LANGUAGE == 'ka' %}
+                ჩემი დამატებული მანქანები
+            {% else %}
+                My Listed Cars
+            {% endif %}
+        </h2>
+
+        {% if cars %}
+
+            <div class="cars-grid">
+
+                {% for car in cars %}
+
+                    <article class="car-card">
+
+                        {% if car.image1 %}
+                            <img
+                                class="profile-car-photo"
+                                src="{{ car.image1.url }}"
+                                alt="{{ car.brand }} {{ car.model }}"
+                                loading="lazy"
+                            >
+                        {% else %}
+                            <div class="profile-car-photo no-image">
+                                {% if CURRENT_LANGUAGE == 'ka' %}
+                                    ფოტო მიუწვდომელია
+                                {% else %}
+                                    No photo available
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div class="car-info">
+
+                            <h3>{{ car.brand }} {{ car.model }}</h3>
+
+                            <p>{{ car.year }}</p>
+
+                            <p>
+                                {{ car.price }} GEL /
+                                {% if CURRENT_LANGUAGE == 'ka' %}დღე{% else %}day{% endif %}
+                            </p>
+
+                            <div class="car-actions">
+
+                                <a
+                                    href="{% url 'car_detail' car.id %}"
+                                    class="view-car-button"
+                                >
+                                    {% if CURRENT_LANGUAGE == 'ka' %}
+                                        დეტალების ნახვა
+                                    {% else %}
+                                        View details
+                                    {% endif %}
+                                </a>
+
+                                <a
+                                    href="{% url 'edit_car' car.id %}"
+                                    class="edit-car-button"
+                                >
+                                    {% if CURRENT_LANGUAGE == 'ka' %}
+                                        რედაქტირება
+                                    {% else %}
+                                        Edit
+                                    {% endif %}
+                                </a>
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'delete_car' car.id %}"
+                                    onsubmit="return confirmAction(this);"
+                                    data-confirm-ka="ნამდვილად გსურთ განცხადების წაშლა? ქირაობის ისტორია შენარჩუნდება."
+                                    data-confirm-en="Remove this car listing? Its rental history will be preserved."
+                                >
+                                    {% csrf_token %}
+
+                                    <button type="submit" class="delete-car-button">
+                                        {% if CURRENT_LANGUAGE == 'ka' %}
+                                            წაშლა
+                                        {% else %}
+                                            Remove listing
+                                        {% endif %}
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <p class="empty-message">
+                {% if CURRENT_LANGUAGE == 'ka' %}
+                    ჯერ არ დაგიმატებია მანქანები.
+                {% else %}
+                    You haven't listed any cars yet.
+                {% endif %}
+            </p>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+
+<script>
+    function confirmAction(form) {
+        const language = document.documentElement.lang;
+
+        const message = language === 'ka'
+            ? form.dataset.confirmKa
+            : form.dataset.confirmEn;
+
+        return window.confirm(message);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,858 @@
+{% load static %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
+
+<!DOCTYPE html>
+<html lang="{{ CURRENT_LANGUAGE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RentCar | {% if CURRENT_LANGUAGE == 'ka' %}ავტომობილების გაქირავება{% else %}Car rentals{% endif %}</title>
+
+    <link rel="stylesheet" href="{% static 'cars/styles.css' %}">
+
+    <style>
+        .home-hero {
+            min-height: 440px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: 25px;
+            background:
+                linear-gradient(90deg, rgba(10,20,39,.94) 0%, rgba(10,20,39,.78) 48%, rgba(10,20,39,.12) 100%),
+                url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1800&q=85") center 55% / cover;
+            color: white;
+            padding: 65px 7%;
+            box-shadow: 0 20px 50px rgba(16,27,50,.15);
+        }
+
+        .home-hero-content {
+            max-width: 650px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .home-hero .eyebrow {
+            color: #e3bb79;
+        }
+
+        .home-hero h1 {
+            font-size: clamp(37px, 5vw, 59px);
+            line-height: 1.12;
+            letter-spacing: -1.8px;
+            margin: 12px 0 20px;
+            color: white;
+        }
+
+        .home-hero p.hero-copy {
+            max-width: 530px;
+            color: #e0e5ed;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        .hero-actions .button-primary {
+            background: #dfb66f;
+            color: #17233b;
+        }
+
+        .hero-actions .button-primary:hover {
+            background: #edca8e;
+        }
+
+        .hero-actions .button-outline {
+            background: rgba(255,255,255,.10);
+            border: 1px solid rgba(255,255,255,.4);
+            color: white;
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-actions .button-outline:hover {
+            background: rgba(255,255,255,.2);
+        }
+
+        .home-search {
+            position: relative;
+            z-index: 2;
+            margin: -42px 4% 65px;
+            padding: 28px 30px 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 45px rgba(16,27,50,.12);
+            border: 1px solid #eeece7;
+        }
+
+        .home-search .section-heading {
+            margin-bottom: 20px;
+        }
+
+        .home-search .filter-form {
+            grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+        }
+
+        .home-section {
+            margin: 65px 0;
+        }
+
+        .home-section .section-heading {
+            margin-bottom: 25px;
+        }
+
+        .home-section .section-heading h2 {
+            font-size: 28px;
+        }
+
+        .home-section .eyebrow {
+            color: #a77b36;
+        }
+
+        .home-section .car-card {
+            background: white;
+        }
+
+        .home-section .car-photo {
+            height: 205px;
+        }
+
+        .home-section .car-info {
+            padding: 19px;
+        }
+
+        .home-section .car-info h3 {
+            font-size: 18px;
+        }
+
+        .home-section .card-bottom .button {
+            padding: 9px 13px;
+        }
+
+        .home-section .price {
+            font-size: 19px;
+        }
+
+        .home-section .car-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .home-car-photo {
+            display: block;
+            width: 100%;
+            height: 205px;
+            object-fit: cover;
+            background: #eceef1;
+        }
+
+        .home-photo-placeholder {
+            width: 100%;
+            height: 205px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eceef1;
+            color: #778194;
+            font-size: 14px;
+            text-align: center;
+            padding: 15px;
+        }
+
+        /* FAVORITE BUTTON */
+
+        .favorite-form {
+            margin-top: 12px;
+        }
+
+        .favorite-button {
+            width: 100%;
+            min-height: 40px;
+            padding: 9px 14px;
+            border: 1px solid #dfb66f;
+            border-radius: 9px;
+            background: white;
+            color: #17233b;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .favorite-button:hover {
+            background: #fff7e9;
+            border-color: #c99b50;
+        }
+
+        .favorite-button.is-favorite {
+            background: #fff4e2;
+            color: #94651e;
+        }
+
+        .favorite-login-link {
+            display: block;
+            margin-top: 12px;
+            padding: 10px;
+            border: 1px solid #dfb66f;
+            border-radius: 9px;
+            color: #17233b;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .favorite-login-link:hover {
+            background: #fff7e9;
+        }
+
+        .home-divider {
+            border: 0;
+            border-top: 1px solid #e9e7e1;
+            margin: 55px 0;
+        }
+
+        .home-footer {
+            padding: 35px 20px;
+            background: #101b32;
+            color: #c5ccda;
+            text-align: center;
+        }
+
+        .home-footer strong {
+            color: white;
+            font-size: 20px;
+            letter-spacing: -.5px;
+        }
+
+        .home-footer strong span {
+            color: #dfb66f;
+        }
+
+        .home-footer p {
+            font-size: 12px;
+            margin: 9px 0 0;
+        }
+
+        @media (max-width: 1000px) {
+            .home-search .filter-form {
+                grid-template-columns: repeat(2, minmax(0,1fr));
+            }
+        }
+
+        @media (max-width: 700px) {
+            .home-hero {
+                min-height: 390px;
+                padding: 40px 25px;
+                background-position: 60% center;
+            }
+
+            .home-hero h1 {
+                font-size: 36px;
+            }
+
+            .home-search {
+                margin: -25px 0 45px;
+                padding: 22px;
+            }
+
+            .home-search .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .home-section {
+                margin: 45px 0;
+            }
+
+            .home-section .section-heading h2 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="site-header">
+
+    <a class="brand" href="{% url 'home' %}">Rent<span>Car</span></a>
+
+    <nav class="main-nav">
+
+        <a href="{% url 'home' %}">
+            {% if CURRENT_LANGUAGE == 'ka' %}მთავარი{% else %}Home{% endif %}
+        </a>
+
+        {% include 'cars/language_switcher.html' %}
+
+        {% if request.session.user %}
+
+            <a href="{% url 'profile' %}">
+                {% if CURRENT_LANGUAGE == 'ka' %}პროფილი{% else %}Profile{% endif %}
+            </a>
+
+            <a class="nav-cta" href="{% url 'add_car' %}">
+                {% if CURRENT_LANGUAGE == 'ka' %}+ დამატება{% else %}+ List your car{% endif %}
+            </a>
+
+            <a href="{% url 'logout' %}">
+                {% if CURRENT_LANGUAGE == 'ka' %}გამოსვლა{% else %}Log out{% endif %}
+            </a>
+
+        {% else %}
+
+            <a class="nav-cta" href="{% url 'login' %}">
+                {% if CURRENT_LANGUAGE == 'ka' %}შესვლა{% else %}Log in{% endif %}
+            </a>
+
+            <a href="{% url 'register' %}">
+                {% if CURRENT_LANGUAGE == 'ka' %}რეგისტრაცია{% else %}Register{% endif %}
+            </a>
+
+        {% endif %}
+
+    </nav>
+
+</header>
+
+
+<main class="page-shell">
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <p class="message {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    <!-- HERO -->
+
+    <section class="home-hero">
+
+        <div class="home-hero-content">
+
+            <p class="eyebrow">
+                {% if CURRENT_LANGUAGE == 'ka' %}
+                    იმოგზაურე თავისუფლად
+                {% else %}
+                    YOUR JOURNEY STARTS HERE
+                {% endif %}
+            </p>
+
+            <h1>
+                {% if CURRENT_LANGUAGE == 'ka' %}
+                    იპოვე ავტომობილი შენი შემდეგი მოგზაურობისთვის
+                {% else %}
+                    Find your perfect car. Start your journey.
+                {% endif %}
+            </h1>
+
+            <p class="hero-copy">
+                {% if CURRENT_LANGUAGE == 'ka' %}
+                    დაათვალიერე ავტომობილები საქართველოს სხვადასხვა ქალაქში და აირჩიე შენთვის სასურველი.
+                {% else %}
+                    Discover cars across Georgia. Find the right ride for your plans and enjoy the journey.
+                {% endif %}
+            </p>
+
+            <div class="hero-actions">
+
+                <a href="#cars" class="button button-primary">
+                    {% if CURRENT_LANGUAGE == 'ka' %}ავტომობილების ნახვა{% else %}Explore cars{% endif %}
+                </a>
+
+                {% if request.session.user %}
+
+                    <a href="{% url 'add_car' %}" class="button button-outline">
+                        {% if CURRENT_LANGUAGE == 'ka' %}განათავსე განცხადება{% else %}List your car{% endif %}
+                    </a>
+
+                {% else %}
+
+                    <a href="{% url 'register' %}" class="button button-outline">
+                        {% if CURRENT_LANGUAGE == 'ka' %}შემოგვიერთდი{% else %}Join RentCar{% endif %}
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SEARCH -->
+
+    <section class="home-search">
+
+        <div class="section-heading compact-heading">
+            <div>
+
+                <p class="eyebrow">
+                    {% if CURRENT_LANGUAGE == 'ka' %}ძიება{% else %}FIND YOUR RIDE{% endif %}
+                </p>
+
+                <h2>
+                    {% if CURRENT_LANGUAGE == 'ka' %}მოძებნე ავტომობილი{% else %}Find your car{% endif %}
+                </h2>
+
+            </div>
+        </div>
+
+        <form method="GET" action="{% url 'home' %}" class="filter-form">
+
+            <div class="filter-group">
+
+                <label for="city">
+                    {% if CURRENT_LANGUAGE == 'ka' %}ქალაქი{% else %}City{% endif %}
+                </label>
+
+                <select name="city" id="city">
+
+                    <option value="">
+                        {% if CURRENT_LANGUAGE == 'ka' %}ყველა ქალაქი{% else %}All cities{% endif %}
+                    </option>
+
+                    {% for city in cities %}
+
+                        <option value="{{ city.slug }}" {% if selected_city == city.slug %}selected{% endif %}>
+                            {% if CURRENT_LANGUAGE == 'ka' %}
+                                {{ city.ka }}
+                            {% else %}
+                                {{ city.en }}
+                            {% endif %}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="year_from">
+                    {% if CURRENT_LANGUAGE == 'ka' %}წელი — დან{% else %}Year — from{% endif %}
+                </label>
+
+                <select name="year_from" id="year_from">
+
+                    <option value="">
+                        {% if CURRENT_LANGUAGE == 'ka' %}ნებისმიერი{% else %}Any{% endif %}
+                    </option>
+
+                    {% for year in years %}
+
+                        <option value="{{ year }}" {% if selected_year_from == year|stringformat:'s' %}selected{% endif %}>
+                            {{ year }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="year_to">
+                    {% if CURRENT_LANGUAGE == 'ka' %}წელი — მდე{% else %}Year — to{% endif %}
+                </label>
+
+                <select name="year_to" id="year_to">
+
+                    <option value="">
+                        {% if CURRENT_LANGUAGE == 'ka' %}ნებისმიერი{% else %}Any{% endif %}
+                    </option>
+
+                    {% for year in years %}
+
+                        <option value="{{ year }}" {% if selected_year_to == year|stringformat:'s' %}selected{% endif %}>
+                            {{ year }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="capacity">
+                    {% if CURRENT_LANGUAGE == 'ka' %}ადგილების რაოდენობა{% else %}Seats{% endif %}
+                </label>
+
+                <select name="capacity" id="capacity">
+
+                    <option value="">
+                        {% if CURRENT_LANGUAGE == 'ka' %}ნებისმიერი{% else %}Any capacity{% endif %}
+                    </option>
+
+                    {% for seats in capacities %}
+
+                        <option value="{{ seats }}" {% if selected_capacity == seats|stringformat:'s' %}selected{% endif %}>
+                            {{ seats }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-actions">
+
+                <button class="button button-primary" type="submit">
+                    {% if CURRENT_LANGUAGE == 'ka' %}ძიება{% else %}Search{% endif %}
+                </button>
+
+                <a class="clear-link" href="{% url 'home' %}">
+                    {% if CURRENT_LANGUAGE == 'ka' %}გასუფთავება{% else %}Clear{% endif %}
+                </a>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- SEARCH RESULTS -->
+
+    {% if is_filtered %}
+
+    <section class="home-section" id="cars">
+
+        <div class="section-heading">
+
+            <div>
+
+                <p class="eyebrow">
+                    {% if CURRENT_LANGUAGE == 'ka' %}შედეგები{% else %}YOUR SEARCH{% endif %}
+                </p>
+
+                <h2>
+                    {% if CURRENT_LANGUAGE == 'ka' %}ძიების შედეგები{% else %}Search results{% endif %}
+                </h2>
+
+            </div>
+
+            <span class="result-count">
+                {{ cars|length }}
+                {% if CURRENT_LANGUAGE == 'ka' %}ავტომობილი{% else %}cars{% endif %}
+            </span>
+
+        </div>
+
+
+        <div class="car-grid">
+
+            {% for car in cars %}
+
+            <article class="car-card">
+
+                {% if car.imageUrl1 and car.imageUrl1 != 'string' %}
+
+                    <img
+                        class="car-photo home-car-photo"
+                        src="{{ car.imageUrl1 }}"
+                        alt="{{ car.brand }} {{ car.model }}"
+                        loading="lazy"
+                    >
+
+                {% else %}
+
+                    <div class="home-photo-placeholder">
+                        {% if CURRENT_LANGUAGE == 'ka' %}
+                            ფოტო მიუწვდომელია
+                        {% else %}
+                            Photo unavailable
+                        {% endif %}
+                    </div>
+
+                {% endif %}
+
+
+                <div class="car-info">
+
+                    <p class="car-meta">{{ car.year }} · {{ car.city }}</p>
+
+                    <h3>{{ car.brand }} {{ car.model }}</h3>
+
+                    <p class="car-seats">
+                        {{ car.capacity }}
+                        {% if CURRENT_LANGUAGE == 'ka' %}ადგილი{% else %}seats{% endif %}
+                    </p>
+
+                    <div class="card-bottom">
+
+                        <p class="price">
+                            {{ car.price }}
+                            <small>GEL / {% if CURRENT_LANGUAGE == 'ka' %}დღე{% else %}day{% endif %}</small>
+                        </p>
+
+                        <a class="button button-outline" href="{% url 'car_detail' car.id %}">
+                            {% if CURRENT_LANGUAGE == 'ka' %}დეტალები{% else %}Details{% endif %}
+                        </a>
+
+                    </div>
+
+                    {% include 'cars/favorite_button.html' with car=car %}
+
+                </div>
+
+            </article>
+
+            {% empty %}
+
+                <p class="empty-state">
+                    {% if CURRENT_LANGUAGE == 'ka' %}
+                        ამ პარამეტრებით ავტომობილი ვერ მოიძებნა.
+                    {% else %}
+                        No cars match these filters. Try changing your search criteria.
+                    {% endif %}
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+
+    <hr class="home-divider">
+
+
+    <!-- POPULAR CARS -->
+
+    <section class="home-section" id="popular-cars">
+
+        <div class="section-heading">
+
+            <div>
+
+                <p class="eyebrow">
+                    {% if CURRENT_LANGUAGE == 'ka' %}პოპულარული არჩევანი{% else %}HANDPICKED FOR YOU{% endif %}
+                </p>
+
+                <h2>
+                    {% if CURRENT_LANGUAGE == 'ka' %}პოპულარული ავტომობილები{% else %}Popular cars{% endif %}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="car-grid">
+
+            {% for car in popular_cars %}
+
+            <article class="car-card">
+
+                {% if car.imageUrl1 and car.imageUrl1 != 'string' %}
+
+                    <img
+                        class="car-photo home-car-photo"
+                        src="{{ car.imageUrl1 }}"
+                        alt="{{ car.brand }} {{ car.model }}"
+                        loading="lazy"
+                    >
+
+                {% else %}
+
+                    <div class="home-photo-placeholder">
+                        {% if CURRENT_LANGUAGE == 'ka' %}
+                            ფოტო მიუწვდომელია
+                        {% else %}
+                            Photo unavailable
+                        {% endif %}
+                    </div>
+
+                {% endif %}
+
+
+                <div class="car-info">
+
+                    <p class="car-meta">{{ car.year }} · {{ car.city }}</p>
+
+                    <h3>{{ car.brand }} {{ car.model }}</h3>
+
+                    <p class="car-seats">
+                        {{ car.capacity }}
+                        {% if CURRENT_LANGUAGE == 'ka' %}ადგილი{% else %}seats{% endif %}
+                    </p>
+
+                    <div class="card-bottom">
+
+                        <p class="price">
+                            {{ car.price }}
+                            <small>GEL / {% if CURRENT_LANGUAGE == 'ka' %}დღე{% else %}day{% endif %}</small>
+                        </p>
+
+                        <a class="button button-outline" href="{% url 'car_detail' car.id %}">
+                            {% if CURRENT_LANGUAGE == 'ka' %}დეტალები{% else %}Details{% endif %}
+                        </a>
+
+                    </div>
+
+                    {% include 'cars/favorite_button.html' with car=car %}
+
+                </div>
+
+            </article>
+
+            {% empty %}
+
+                <p class="empty-state">
+                    {% if CURRENT_LANGUAGE == 'ka' %}
+                        პოპულარული ავტომობილები ამჟამად მიუწვდომელია.
+                    {% else %}
+                        Popular cars are currently unavailable.
+                    {% endif %}
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <hr class="home-divider">
+
+
+    <!-- MORE CARS -->
+
+    <section class="home-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <p class="eyebrow">
+                    {% if CURRENT_LANGUAGE == 'ka' %}აღმოაჩინე მეტი{% else %}EXPLORE MORE{% endif %}
+                </p>
+
+                <h2>
+                    {% if CURRENT_LANGUAGE == 'ka' %}სხვა ავტომობილები{% else %}More cars to discover{% endif %}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="car-grid">
+
+            {% for car in random_cars %}
+
+            <article class="car-card">
+
+                {% if car.imageUrl1 and car.imageUrl1 != 'string' %}
+
+                    <img
+                        class="car-photo home-car-photo"
+                        src="{{ car.imageUrl1 }}"
+                        alt="{{ car.brand }} {{ car.model }}"
+                        loading="lazy"
+                    >
+
+                {% else %}
+
+                    <div class="home-photo-placeholder">
+                        {% if CURRENT_LANGUAGE == 'ka' %}
+                            ფოტო მიუწვდომელია
+                        {% else %}
+                            Photo unavailable
+                        {% endif %}
+                    </div>
+
+                {% endif %}
+
+
+                <div class="car-info">
+
+                    <p class="car-meta">{{ car.year }} · {{ car.city }}</p>
+
+                    <h3>{{ car.brand }} {{ car.model }}</h3>
+
+                    <p class="car-seats">
+                        {{ car.capacity }}
+                        {% if CURRENT_LANGUAGE == 'ka' %}ადგილი{% else %}seats{% endif %}
+                    </p>
+
+                    <div class="card-bottom">
+
+                        <p class="price">
+                            {{ car.price }}
+                            <small>GEL / {% if CURRENT_LANGUAGE == 'ka' %}დღე{% else %}day{% endif %}</small>
+                        </p>
+
+                        <a class="button button-outline" href="{% url 'car_detail' car.id %}">
+                            {% if CURRENT_LANGUAGE == 'ka' %}დეტალები{% else %}Details{% endif %}
+                        </a>
+
+                    </div>
+
+                    {% include 'cars/favorite_button.html' with car=car %}
+
+                </div>
+
+            </article>
+
+            {% empty %}
+
+                <p class="empty-state">
+                    {% if CURRENT_LANGUAGE == 'ka' %}
+                        ავტომობილები ამჟამად მიუწვდომელია.
+                    {% else %}
+                        No cars are currently available.
+                    {% endif %}
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- FOOTER -->
+
+<footer class="home-footer">
+
+    <strong>Rent<span>Car</span></strong>
+
+    <p>
+        {% if CURRENT_LANGUAGE == 'ka' %}
+            ავტომობილების გაქირავების პორტალი · საქართველო
+        {% else %}
+            Car rental platform · Georgia
+        {% endif %}
+    </p>
+
+    <p>© {% now "Y" %} RentCar. All rights reserved.</p>
+
+</footer>
+
+
+</body>
+</html>

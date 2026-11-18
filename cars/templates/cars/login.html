@@ -1,0 +1,254 @@
+
+{% load static %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
+
+<!DOCTYPE html>
+<html lang="{{ CURRENT_LANGUAGE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% if CURRENT_LANGUAGE == 'ka' %}შესვლა{% else %}Login{% endif %} - RentCar
+    </title>
+
+    <link rel="stylesheet" href="{% static 'cars/styles.css' %}">
+
+    <style>
+        .auth-page {
+            min-height: calc(100vh - 90px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 55px 20px;
+            background: #f7f6f2;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 460px;
+            padding: 42px;
+            background: #fff;
+            border: 1px solid #e9e8e3;
+            border-radius: 22px;
+            box-shadow: 0 18px 55px rgba(16, 27, 50, 0.08);
+        }
+
+        .auth-label {
+            display: block;
+            margin-bottom: 9px;
+            color: #26344a;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .auth-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px 15px;
+            margin-bottom: 22px;
+            border: 1px solid #dedfe3;
+            border-radius: 10px;
+            background: #fff;
+            color: #202b3c;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .auth-input:focus {
+            border-color: #4169a1;
+            box-shadow: 0 0 0 3px rgba(65, 105, 161, 0.12);
+        }
+
+        .auth-submit {
+            width: 100%;
+            padding: 15px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 10px;
+            background: #101b32;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .auth-submit:hover {
+            background: #263d62;
+            transform: translateY(-1px);
+        }
+
+        .auth-footer {
+            margin: 26px 0 0;
+            color: #778194;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .auth-footer a {
+            color: #b18745;
+            font-weight: 700;
+            text-decoration: none;
+            margin-left: 4px;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-heading {
+            margin: 0 0 10px;
+            color: #101b32;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.7px;
+        }
+
+        .auth-description {
+            margin: 0 0 32px;
+            color: #778194;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .auth-decoration {
+            width: 48px;
+            height: 4px;
+            margin-bottom: 22px;
+            border-radius: 5px;
+            background: #d9ad62;
+        }
+
+        @media (max-width: 520px) {
+            .auth-card {
+                padding: 30px 23px;
+            }
+
+            .auth-heading {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="site-header">
+        <a class="brand" href="{% url 'home' %}">Rent<span>Car</span></a>
+
+        <nav class="main-nav">
+            <a href="{% url 'home' %}">
+                {% if CURRENT_LANGUAGE == 'ka' %}მთავარი{% else %}Home{% endif %}
+            </a>
+
+            {% include 'cars/language_switcher.html' %}
+
+            <a href="{% url 'register' %}">
+                {% if CURRENT_LANGUAGE == 'ka' %}რეგისტრაცია{% else %}Register{% endif %}
+            </a>
+        </nav>
+    </header>
+
+    <main class="auth-page">
+        <section class="auth-card">
+
+            <div class="auth-decoration"></div>
+
+            <h1 class="auth-heading">
+                {% if CURRENT_LANGUAGE == 'ka' %}
+                    ანგარიშზე შესვლა
+                {% else %}
+                    Welcome Back
+                {% endif %}
+            </h1>
+
+            <p class="auth-description">
+                {% if CURRENT_LANGUAGE == 'ka' %}
+                    შეიყვანეთ თქვენი მონაცემები ანგარიშზე შესასვლელად.
+                {% else %}
+                    Enter your details to access your RentCar account.
+                {% endif %}
+            </p>
+
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <p class="message {{ message.tags }}">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if message %}
+                <p class="message">{{ message }}</p>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <label class="auth-label" for="phoneNumber">
+                    {% if CURRENT_LANGUAGE == 'ka' %}
+                        ტელეფონის ნომერი
+                    {% else %}
+                        Phone Number
+                    {% endif %}
+                </label>
+
+                <input
+                    class="auth-input"
+                    type="text"
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    autocomplete="tel"
+                    required
+                >
+
+                <label class="auth-label" for="password">
+                    {% if CURRENT_LANGUAGE == 'ka' %}
+                        პაროლი
+                    {% else %}
+                        Password
+                    {% endif %}
+                </label>
+
+                <input
+                    class="auth-input"
+                    type="password"
+                    id="password"
+                    name="password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button class="auth-submit" type="submit">
+                    {% if CURRENT_LANGUAGE == 'ka' %}
+                        შესვლა
+                    {% else %}
+                        Login to Account
+                    {% endif %}
+                </button>
+            </form>
+
+            <p class="auth-footer">
+                {% if CURRENT_LANGUAGE == 'ka' %}
+                    არ გაქვთ ანგარიში?
+                {% else %}
+                    Don't have an account?
+                {% endif %}
+
+                <a href="{% url 'register' %}">
+                    {% if CURRENT_LANGUAGE == 'ka' %}
+                        რეგისტრაცია
+                    {% else %}
+                        Register
+                    {% endif %}
+                </a>
+            </p>
+
+        </section>
+    </main>
+
+</body>
+</html>

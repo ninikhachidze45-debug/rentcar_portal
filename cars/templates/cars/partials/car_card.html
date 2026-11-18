@@ -1,0 +1,40 @@
+
+<article class="car-card">
+    <a href="{% url 'car_detail' car.id %}" class="car-image-link">
+        {% if car.imageUrl1 %}
+            <img src="{{ car.imageUrl1 }}"
+                 alt="{{ car.brand }} {{ car.model }}"
+                 class="car-photo">
+        {% else %}
+            <div class="no-image">
+                <span>RENTCAR</span>
+            </div>
+        {% endif %}
+
+        <span class="image-arrow">♡</span>
+    </a>
+
+    <div class="car-info">
+        <div class="car-title-row">
+            <h3>{{ car.brand }} {{ car.model }}</h3>
+            <span class="car-year">{{ car.year }}</span>
+        </div>
+
+        <div class="price">
+            <strong>₾{{ car.price }}</strong>
+            <span>/ {% if CURRENT_LANGUAGE == 'ka' %}დღე{% else %}day{% endif %}</span>
+        </div>
+
+        <div class="car-meta">
+            <span>♟ {{ car.capacity }}</span>
+            <span>♧ {{ car.city }}</span>
+        </div>
+
+        <div class="card-bottom">
+            <a href="{% url 'car_detail' car.id %}" class="card-link">
+                {% if CURRENT_LANGUAGE == 'ka' %}დეტალები{% else %}Details{% endif %}
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</article>

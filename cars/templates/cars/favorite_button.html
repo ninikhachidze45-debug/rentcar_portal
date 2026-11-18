@@ -1,0 +1,24 @@
+{% if request.user.is_authenticated %}
+
+    <form method="POST" action="{% url 'toggle_favorite' car.id %}" class="favorite-form">
+        {% csrf_token %}
+
+        <button
+            type="submit"
+            class="favorite-button {% if car.id in favorite_ids %}is-favorite{% endif %}"
+        >
+            {% if car.id in favorite_ids %}
+                {% if CURRENT_LANGUAGE == 'ka' %}♥ რჩეულებიდან წაშლა{% else %}♥ Remove from favorites{% endif %}
+            {% else %}
+                {% if CURRENT_LANGUAGE == 'ka' %}♡ რჩეულებში დამატება{% else %}♡ Add to favorites{% endif %}
+            {% endif %}
+        </button>
+    </form>
+
+{% else %}
+
+    <a href="{% url 'login' %}" class="favorite-login-link">
+        {% if CURRENT_LANGUAGE == 'ka' %}♡ რჩეულებში დამატება{% else %}♡ Add to favorites{% endif %}
+    </a>
+
+{% endif %}
